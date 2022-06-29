@@ -26,3 +26,18 @@ jobs:
     - name: Build the Solution
       run: msbuild SampleWebApplication.sln /p:Configuration=Release
     
+  deploy:
+    runs-on: windows-latest
+    needs: build  
+    steps:
+      - id: 'auth'
+        uses: 'google-github-actions/auth@v0'
+        with:
+          credentials_json: '${{ secrets.GCP_SA_KEY }}'
+
+      - name: 'Deploy to App Engine'
+        uses: 'google-github-actions/deploy-appengine@v0'
+        with:
+          deliverables: 'app.yaml'
+          promote: false
+          version: 'v1' 
