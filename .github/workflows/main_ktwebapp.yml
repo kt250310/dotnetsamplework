@@ -41,12 +41,6 @@ jobs:
       name: 'Production'
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
   
-  gcp-app-deploy:
-     - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
-       entrypoint: 'bash'
-       args: ['-c', 'gcloud config set app/cloud_build_timeout 1600 && gcloud app deploy']
-       timeout: '1600s'
-
     steps:
       - name: Download artifact from build job
         uses: actions/download-artifact@v2
@@ -61,3 +55,12 @@ jobs:
           slot-name: 'Production'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_DE4D1E189B9343B4BBB4A0C1A4352B6A }}
           package: .
+  GCR-APP-Engine:
+     runs-on: ubuntu-latest
+     steps:
+      - name: Authentication
+        id: 'auth'
+        uses: 'google-github-actions/auth@v0'
+        with:
+          workload_identity_provider: 'projects/123456789/locations/global/workloadIdentityPools/my-pool/providers/my-provider'
+          service_account: 'my-service-account@my-project.iam.gserviceaccount.com'
